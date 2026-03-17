@@ -1,0 +1,43 @@
+version: '3.8'
+
+services:
+  kasma-media:
+    build: .
+    ports:
+      - "9000:9000"
+    environment:
+      - PORT=9000
+      - MINIO_ENDPOINT=minio
+      - MINIO_PORT=9000
+      - MINIO_ACCESS_KEY=minioadmin
+      - MINIO_SECRET_KEY=minioadmin
+      - MINIO_BUCKET=kasma-media
+      - MINIO_USE_SSL=false
+      - REDIS_HOST=redis
+      - REDIS_PORT=6379
+    depends_on:
+      - redis
+      - minio
+    volumes:
+      - media_temp_data:/app/tmp
+
+  redis:
+    image: redis:alpine
+    ports:
+      - "6379:6379"
+
+  minio:
+    image: minio/minio
+    ports:
+      - "9001:9000" # S3 API
+      - "9002:9001" # Web Console
+    environment:
+      - MINIO_ROOT_USER=minioadmin
+      - MINIO_ROOT_PASSWORD=minioadmin
+    command: server /data --console-address ":9001"
+    volumes:
+      - minio_data:/data
+
+volumes:
+  minio_data:
+  media_temp_data:
