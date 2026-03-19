@@ -21,7 +21,8 @@ WORKDIR /app
 RUN apk add --no-cache ffmpeg
 
 COPY --from=builder /app/package.json /app/yarn.lock ./
-RUN yarn install --production --frozen-lockfile
+COPY --from=builder /app/node_modules ./node_modules
+RUN yarn install --production --frozen-lockfile --prefer-offline
 
 COPY --from=builder /app/dist ./dist
 

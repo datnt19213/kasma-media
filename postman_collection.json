@@ -108,6 +108,57 @@
 			"response": []
 		},
 		{
+			"name": "List Media",
+			"request": {
+				"method": "GET",
+				"header": [],
+				"url": {
+					"raw": "localhost:9000/api/v1/media/list",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"api",
+						"v1",
+						"media",
+						"list"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Delete Media",
+			"request": {
+				"method": "POST",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{\n    \"fileName\": \"uuid.mp4\"\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "localhost:9000/api/v1/media/delete",
+					"host": [
+						"localhost"
+					],
+					"port": "9000",
+					"path": [
+						"api",
+						"v1",
+						"media",
+						"delete"
+					]
+				}
+			},
+			"response": []
+		},
+		{
 			"name": "Stream HLS Playlist",
 			"request": {
 				"method": "GET",

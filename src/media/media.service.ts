@@ -58,4 +58,46 @@ export class MediaService {
     const fileName = `hls/${folder}/${file}`;
     return await this.storageService.getFileStream(fileName);
   }
+
+  async listMedia() {
+    // List all objects in the bucket
+    const objects = await this.storageService.listObjects();
+    
+    // Filter out HLS segments and raw files if you want a clean list, 
+    // or just return everything. Typically, we want to list "Main" entries.
+    // Let's return raw files and root images.
+    return objects.filter(obj => !obj.name.includes('/') || obj.name.startsWith('raw/'))
+      .map(obj => ({
+        name: obj.name,
+        size: obj.size,
+        lastModified: obj.lastModified,
+        type: obj.name.startsWith('raw/') ? 'video' : 'image',
+      }));
+  }
+
+  async deleteMedia(fileName: string) {
+    // Determine if it's a video (in raw/) or image (root)
+    const isVideo = fileName.startsWith('raw/') || fileName.endsWith('.mp4') || fileName.endsWith('.mov') || fileName.endsWith('.avi');
+    
+    if (isVideo) {
+      const actualName = fileName.startsWith('raw/') ? fileName.split('/')[1] : fileName;
+      const folderName = actualName.split('.')[0];
+      
+      this.logger.log(`Deleting video: ${actualName} and its HLS folder: hls/${folderName}`);
+      
+      // 1. Delete raw file
+      await this.storageService.deleteFile(`raw/${actualName}`);
+      
+      // 2. Delete HLS folder content
+      const hlsFiles = await this.storageService.listObjects(`hls/${folderName}/`);
+      for (const file of hlsFiles) {
+        await this.storageService.deleteFile(file.name);
+      }
+    } else {
+      this.logger.log(`Deleting image: ${fileName}`);
+      await this.storageService.deleteFile(fileName);
+    }
+
+    return { message: `Media ${fileName} deleted successfully` };
+  }
 }

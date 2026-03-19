@@ -90,4 +90,18 @@ export class StorageService implements OnModuleInit {
       throw error;
     }
   }
+
+  async listObjects(prefix: string = ''): Promise<any[]> {
+    return new Promise((resolve, reject) => {
+      const objectsList: any[] = [];
+      const stream = this.minioClient.listObjectsV2(this.bucketName, prefix, true);
+      
+      stream.on('data', (obj) => objectsList.push(obj));
+      stream.on('error', (err) => {
+        this.logger.error(`Error listing objects with prefix "${prefix}": ${err.message}`);
+        reject(err);
+      });
+      stream.on('end', () => resolve(objectsList));
+    });
+  }
 }

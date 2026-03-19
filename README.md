@@ -43,6 +43,17 @@ The service runs on port **9000** and uses global prefix `api/v1`.
 - **Body**: `file` (Multipart/form-data)
 - **Response**: Returns `jobId` and `fileName`.
 
+### 1.1 List Media
+
+- **URL**: `GET /api/v1/media/list`
+- **Response**: Returns an array of media objects (name, size, type).
+
+### 1.2 Delete Media
+
+- **URL**: `POST /api/v1/media/delete`
+- **Body**: `{ "fileName": "..." }`
+- **Response**: Confirmation message.
+
 ### 2. Get Media Info
 
 - **URL**: `GET /api/v1/media/info?fileName=...`
@@ -86,3 +97,13 @@ The system uses the **HLS (HTTP Live Streaming)** standard:
 - `REDIS_HOST`: Redis address.
 - `REDIS_PORT`: Redis port.
 - `PORT`: Service port (default 9000).
+
+## Troubleshooting & Security
+
+### 1. Redis Warnings
+- **Memory Overcommit**: If you see a warning about `vm.overcommit_memory`, run `sysctl vm.overcommit_memory=1` on your host machine to improve Redis performance during background saves.
+- **Security**: In production, ensure `REDIS_PASSWORD` is set and Redis is not exposed to the public internet.
+
+### 2. MinIO Warnings
+- **Default Credentials**: The current setup uses `minioadmin:minioadmin`. Change `MINIO_ACCESS_KEY` and `MINIO_SECRET_KEY` in `.env` and `docker-compose.yml` for production.
+- **Single Drive**: MinIO reports a warning when running with a single drive. This is normal for development but should be configured with multiple drives for data redundancy in production.

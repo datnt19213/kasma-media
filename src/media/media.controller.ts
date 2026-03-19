@@ -1,4 +1,4 @@
-import { Controller, Post, Get, UseInterceptors, UploadedFile, Query, BadRequestException, Logger, Param, Res } from '@nestjs/common';
+import { Controller, Post, Get, UseInterceptors, UploadedFile, Query, BadRequestException, Logger, Param, Res, Body } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { MediaService } from './media.service';
 import { v4 as uuidv4 } from 'uuid';
@@ -39,6 +39,19 @@ export class MediaController {
     }
     const url = await this.mediaService.getPresignedUrl(fileName);
     return { fileName, url };
+  }
+
+  @Get('list')
+  async listMedia() {
+    return await this.mediaService.listMedia();
+  }
+
+  @Post('delete')
+  async deleteMedia(@Body('fileName') fileName: string) {
+    if (!fileName) {
+      throw new BadRequestException('fileName is required');
+    }
+    return await this.mediaService.deleteMedia(fileName);
   }
 
   @Get('stream/:folder/:file')
