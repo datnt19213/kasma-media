@@ -1,5 +1,6 @@
-import { Module } from '@nestjs/common';
+import { Module, MiddlewareConsumer, NestModule } from '@nestjs/common';
 import { ConfigModule, ConfigService } from '@nestjs/config';
+import { GatewayMiddleware } from './common/middlewares/gateway.middleware';
 import { BullModule } from '@nestjs/bullmq';
 import { StorageModule } from './storage/storage.module';
 import { MediaModule } from './media/media.module';
@@ -27,4 +28,8 @@ import { ProcessorModule } from './processor/processor.module';
   controllers: [],
   providers: [],
 })
-export class AppModule {}
+export class AppModule implements NestModule {
+  configure(consumer: MiddlewareConsumer) {
+    consumer.apply(GatewayMiddleware).forRoutes('*');
+  }
+}
